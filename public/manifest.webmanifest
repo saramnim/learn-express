@@ -1,0 +1,18 @@
+{
+  "name": "Encoreflare Learn",
+  "short_name": "Learn",
+  "description": "하루 한 강, 실행으로 이어지는 학습",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F7F4",
+  "theme_color": "#0E0F12",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
