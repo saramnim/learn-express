@@ -4,7 +4,7 @@
 
 ## 제공 기능
 
-- DB1 공통 로그인 및 Learn 셀프 등록
+- DB1 공통 Google·카카오 SSO 및 Learn 셀프 등록
 - 서울 시간 오전 9시 기준 일일 레슨 공개
 - 텍스트·단계 시각화·실행 메모 콘텐츠 블록
 - 버전 충돌과 중복 요청을 막는 진도 저장
@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-Auth 프로젝트의 활성 publishable key를 `VITE_AUTH_SUPABASE_PUBLISHABLE_KEY`에 넣습니다. 서비스 역할 키나 다른 비밀키는 브라우저 환경 변수에 넣지 않습니다.
+Auth 프로젝트의 활성 publishable key를 `VITE_AUTH_SUPABASE_PUBLISHABLE_KEY`에 넣습니다. 서비스 역할 키나 다른 비밀키는 브라우저 환경 변수에 넣지 않습니다. OAuth 공급자는 DB1에서만 관리하며 운영 배포 주소의 `/auth/callback`을 Auth Redirect URLs에 정확히 등록합니다.
 
 ## 검증
 
