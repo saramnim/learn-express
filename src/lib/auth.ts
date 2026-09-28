@@ -1,6 +1,8 @@
 import { createClient, type Session } from '@supabase/supabase-js'
 import type { AuthContext, ApiErrorPayload } from './types'
 
+export type SsoProvider = 'google' | 'kakao'
+
 const authUrl = import.meta.env.VITE_AUTH_SUPABASE_URL?.trim()
 const publishableKey = import.meta.env.VITE_AUTH_SUPABASE_PUBLISHABLE_KEY?.trim()
 const authAppUrl = (import.meta.env.VITE_AUTH_APP_URL || 'https://auth-app.invalid').replace(/\/$/, '')
@@ -18,9 +20,27 @@ export const authClient = authConfigured
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        flowType: 'pkce',
       },
     })
   : null
+
+export async function beginSsoLogin(provider: SsoProvider) {
+  if (!authClient) throw new Error('공통 로그인이 아직 연결되지 않았어요.')
+
+  const redirectTo = new URL('/auth/callback', window.location.origin).toString()
+  const { error } = await authClient.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo },
+  })
+
+  if (error) throw error
+}
+
+export function finishSsoCallback() {
+  if (window.location.pathname !== '/auth/callback') return
+  window.history.replaceState({}, document.title, '/')
+}
 
 export class AuthAppError extends Error {
   status: number
