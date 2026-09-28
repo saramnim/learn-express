@@ -1,0 +1,80 @@
+{
+  "status": "contract",
+  "decision": "EF-TWO-DB-1.0",
+  "protocolVersion": "EF-SERVICE-0.1.0",
+  "authContractVersion": "EF-TWO-DB-1.0",
+  "learnContractVersion": "EF-LEARN-DAILY-1.0",
+  "deployment": {
+    "provider": "Supabase Edge Functions",
+    "function": "service-data",
+    "apiBaseEnvironmentVariable": "VITE_SERVICE_DATA_URL"
+  },
+  "authentication": {
+    "type": "bearer",
+    "audience": "authenticated",
+    "contextEnvironmentVariable": "VITE_AUTH_APP_URL",
+    "verification": "DB1 /user, issuer, subject, audience, expiry, account status, app entitlement on every request"
+  },
+  "idempotencyRetentionSeconds": 2592000,
+  "operations": [
+    {
+      "id": "system.health",
+      "appIds": [],
+      "method": "GET",
+      "path": "/health",
+      "retry": "safe"
+    },
+    {
+      "id": "learn.catalog.list",
+      "appIds": ["learn"],
+      "method": "GET",
+      "path": "/learn/courses",
+      "retry": "safe"
+    },
+    {
+      "id": "learn.course.get",
+      "appIds": ["learn"],
+      "method": "GET",
+      "path": "/learn/courses/{slug}",
+      "retry": "safe"
+    },
+    {
+      "id": "learn.admin.catalog",
+      "appIds": ["learn"],
+      "role": "org_admin",
+      "method": "GET",
+      "path": "/learn/admin/courses",
+      "retry": "safe"
+    },
+    {
+      "id": "learn.admin.course.get",
+      "appIds": ["learn"],
+      "role": "org_admin",
+      "method": "GET",
+      "path": "/learn/admin/courses/{slug}",
+      "retry": "safe"
+    },
+    {
+      "id": "learn.admin.course.save",
+      "appIds": ["learn"],
+      "role": "org_admin",
+      "method": "PUT",
+      "path": "/learn/admin/courses/{slug}",
+      "retry": "idempotent"
+    },
+    {
+      "id": "learn.progress.list",
+      "appIds": ["learn"],
+      "method": "GET",
+      "path": "/learn/progress",
+      "retry": "safe"
+    },
+    {
+      "id": "learn.progress.apply",
+      "appIds": ["learn"],
+      "method": "PUT",
+      "path": "/learn/progress/{lessonId}",
+      "retry": "idempotent"
+    }
+  ]
+}

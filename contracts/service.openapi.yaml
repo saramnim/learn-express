@@ -1,0 +1,328 @@
+openapi: 3.1.0
+info:
+  title: Encoreflare Learn Service API
+  version: 0.1.0
+  description: Learn operations exposed by the fixed-operation EF-TWO-DB-1.0 gateway.
+servers:
+  - url: https://{dataProject}.supabase.co/functions/v1/service-data/v1
+    variables:
+      dataProject:
+        default: YOUR_DATA_PROJECT
+security:
+  - db1Bearer: []
+paths:
+  /health:
+    get:
+      operationId: system.health
+      security: []
+      responses:
+        "200":
+          description: Runtime and DB contract status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+  /learn/courses:
+    get:
+      operationId: learn.catalog.list
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit100"
+      responses:
+        "200":
+          description: Published course summaries.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedSuccess"
+        "401":
+          $ref: "#/components/responses/AuthRequired"
+        "403":
+          $ref: "#/components/responses/AppNotEntitled"
+  /learn/courses/{slug}:
+    get:
+      operationId: learn.course.get
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-z0-9][a-z0-9-]{1,79}$"
+      responses:
+        "200":
+          description: Published course, lessons, and ordered visual/content blocks.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /learn/admin/courses:
+    get:
+      operationId: learn.admin.catalog
+      description: Requires an active Learn org_admin entitlement.
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+      responses:
+        "200":
+          description: Draft, scheduled, published, and archived course summaries.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "403":
+          $ref: "#/components/responses/AppNotEntitled"
+  /learn/admin/courses/{slug}:
+    get:
+      operationId: learn.admin.course.get
+      description: Requires an active Learn org_admin entitlement.
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-z0-9][a-z0-9-]{1,79}$"
+      responses:
+        "200":
+          description: Editable course and its non-archived lessons.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: learn.admin.course.save
+      description: Atomically creates or versions a course and its daily lesson schedule. Requires Learn org_admin.
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-z0-9][a-z0-9-]{1,79}$"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, summary, level, status, lessons]
+              properties:
+                title: { type: string, minLength: 1, maxLength: 160 }
+                summary: { type: string, maxLength: 1000 }
+                level: { type: string, enum: [beginner, intermediate, advanced] }
+                status: { type: string, enum: [draft, published, archived] }
+                publishedAt: { type: [string, "null"], format: date-time }
+                lessons:
+                  type: array
+                  minItems: 1
+                  maxItems: 90
+                  items: { type: object }
+      responses:
+        "200":
+          description: Accepted course version.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+  /learn/progress:
+    get:
+      operationId: learn.progress.list
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit100"
+      responses:
+        "200":
+          description: Progress owned by the verified user and scope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedSuccess"
+  /learn/progress/{lessonId}:
+    put:
+      operationId: learn.progress.apply
+      parameters:
+        - $ref: "#/components/parameters/AppLearn"
+        - $ref: "#/components/parameters/ContractVersion"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [state, percent]
+              properties:
+                state:
+                  type: string
+                  enum: [not_started, in_progress, completed]
+                percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                lastPosition:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Committed progress version.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+components:
+  securitySchemes:
+    db1Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: DB1 Supabase access token
+  parameters:
+    AppLearn:
+      name: X-Encoreflare-App-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        const: learn
+    ContractVersion:
+      name: X-Encoreflare-Contract-Version
+      in: header
+      required: false
+      schema:
+        type: string
+        const: EF-SERVICE-0.1.0
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: "^[A-Za-z0-9._:-]+$"
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Current non-negative record version, for example "0".
+      schema:
+        type: string
+        pattern: '^"?[0-9]{1,18}"?$'
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+        description: Opaque cursor returned by this API.
+    Limit100:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+  schemas:
+    Success:
+      type: object
+      required: [contractVersion, requestId, data]
+      properties:
+        contractVersion:
+          type: string
+          const: EF-SERVICE-0.1.0
+        requestId:
+          type: string
+        data: {}
+    PagedSuccess:
+      allOf:
+        - $ref: "#/components/schemas/Success"
+        - type: object
+          required: [page]
+          properties:
+            page:
+              type: object
+              required: [nextCursor]
+              properties:
+                nextCursor:
+                  type: [string, "null"]
+    Error:
+      type: object
+      required: [contractVersion, requestId, error]
+      properties:
+        contractVersion:
+          type: string
+          const: EF-SERVICE-0.1.0
+        requestId:
+          type: string
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  responses:
+    AuthRequired:
+      description: Missing, expired, forged, or otherwise invalid DB1 access token.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    AppNotEntitled:
+      description: The verified user has no active entitlement for this app.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found or not published.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflict:
+      description: Version mismatch or idempotency key reuse with another request body.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    PreconditionRequired:
+      description: If-Match is required for a mutation.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
