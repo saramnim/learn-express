@@ -49,4 +49,5 @@ DB 계약 검증은 `supabase/tests/`에 있습니다. 모든 DDL은 `supabase/m
 - 편집본에서 제외한 레슨은 삭제하지 않고 `archived`로 보존합니다.
 - 최초 과정은 `solo-founder-7-day-system`이며 7일 동안 하루 한 강씩 공개됩니다.
 - 자세한 인수인계는 [`docs/HANDOFF.md`](docs/HANDOFF.md)를 참고하세요.
-- 실제 프로젝트 식별자, 배포 해시, 운영 권한 현황은 공개 저장소 밖의 운영 기록에서 관리합니다.
+- 공식 소스와 운영 대상의 대응표는 [`docs/SOURCE_OF_TRUTH.md`](docs/SOURCE_OF_TRUTH.md)에 있습니다.
+- 배포 해시와 운영 권한 현황은 비공개 운영 기록에서 관리합니다.
