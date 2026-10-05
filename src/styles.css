@@ -364,3 +364,27 @@ input:disabled { background: var(--surface-muted); color: var(--text-soft); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+
+.sso-options { display: grid; gap: 12px; margin-top: 28px; }
+.sso-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.sso-button:hover:not(:disabled) { border-color: var(--text-soft); background: var(--surface-muted); transform: translateY(-1px); }
+.sso-button:disabled { cursor: wait; opacity: 0.62; }
+.sso-button svg { width: 21px; height: 21px; flex: 0 0 auto; }
+.sso-button.kakao { border-color: #fee500; background: #fee500; color: #191919; }
+.sso-button.kakao:hover:not(:disabled) { border-color: #f3da00; background: #f3da00; }

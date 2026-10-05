@@ -1,0 +1,23 @@
+{
+  "contractVersion": "EF-LEARN-DAILY-1.0",
+  "canonicalSource": {
+    "repository": "https://github.com/saramnim/learn-express",
+    "branch": "main",
+    "web": ["src", "public", "vercel.json"],
+    "database": ["supabase/migrations", "supabase/rollbacks", "supabase/tests"],
+    "edgeFunction": "supabase/functions/service-data/index.ts"
+  },
+  "production": {
+    "webUrl": "https://learn-express-tau.vercel.app/",
+    "authProjectRef": "bkypuccodgojhjyzbhjt",
+    "serviceProjectRef": "ftvkahkubsmzplczpvxv",
+    "serviceFunction": "service-data",
+    "serviceBaseUrl": "https://ftvkahkubsmzplczpvxv.supabase.co/functions/v1/service-data/v1",
+    "databaseMigration": "20260928032320_learn_daily_release_admin"
+  },
+  "sharedRuntimeRule": {
+    "owner": "Learn owns only /v1/learn routes in the shared service-data function",
+    "protectedRoutes": ["/v1/yeoyu", "/v1/pantry"],
+    "requirement": "Changes for Learn must preserve non-Learn routes and contracts"
+  }
+}

@@ -3,7 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { AdminStudio } from './components/AdminStudio'
 import { AuthPanel } from './components/AuthPanel'
 import { LearningWorkspace } from './components/LearningWorkspace'
-import { authClient, authConfigured, AuthAppError, enrollLearn, getLearnContext } from './lib/auth'
+import { authClient, authConfigured, AuthAppError, enrollLearn, finishSsoCallback, getLearnContext } from './lib/auth'
 import { serviceConfigured } from './lib/service'
 import type { AuthContext } from './lib/types'
 
@@ -73,10 +73,12 @@ export default function App() {
     }
     void authClient.auth.getSession().then(({ data }) => {
       setSession(data.session)
+      if (data.session) finishSsoCallback()
       setLoading(false)
     })
-    const { data } = authClient.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = authClient.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession)
+      if (event === 'SIGNED_IN' && nextSession) finishSsoCallback()
       if (!nextSession) {
         setContext(null)
         setContextError(null)
