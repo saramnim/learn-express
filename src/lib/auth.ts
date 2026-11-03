@@ -5,11 +5,9 @@ export type SsoProvider = 'google' | 'kakao'
 
 const authUrl = import.meta.env.VITE_AUTH_SUPABASE_URL?.trim()
 const publishableKey = import.meta.env.VITE_AUTH_SUPABASE_PUBLISHABLE_KEY?.trim()
-const authAppUrl = (import.meta.env.VITE_AUTH_APP_URL || 'https://auth-app.invalid').replace(/\/$/, '')
 
 export const authConfigured = Boolean(
   authUrl
-  && authAppUrl !== 'https://auth-app.invalid'
   && publishableKey
   && !publishableKey.includes('replace-with'),
 )
@@ -54,7 +52,7 @@ export class AuthAppError extends Error {
 }
 
 async function authAppFetch(path: string, token: string, init?: RequestInit) {
-  const response = await fetch(`${authAppUrl}${path}`, {
+  const response = await fetch(path, {
     ...init,
     headers: {
       Accept: 'application/json',
@@ -79,7 +77,7 @@ export function getLearnContext(session: Session) {
 }
 
 export async function enrollLearn(session: Session) {
-  await authAppFetch('/api/auth/apps/learn/enrollment', session.access_token, {
+  await authAppFetch('/api/auth/enrollment', session.access_token, {
     method: 'POST',
     body: JSON.stringify({}),
   })

@@ -10,9 +10,11 @@
 | Learn DB 계약 | `supabase/migrations/`, `supabase/rollbacks/`, `supabase/tests/` | DB2 `ftvkahkubsmzplczpvxv` |
 | Learn API 라우트 | `supabase/functions/service-data/index.ts`의 `/v1/learn/*` | DB2 Edge Function `service-data` |
 | 공통 로그인 클라이언트 | `src/lib/auth.ts` | DB1 `bkypuccodgojhjyzbhjt` |
+| 공통 권한 프록시 | `api/auth/`, `server/auth-proxy.ts` | Learn Vercel Functions → Secret Key API |
 | 고정 계약 | `contracts/` | `EF-TWO-DB-1.0`, `EF-SERVICE-0.1.0`, `EF-LEARN-DAILY-1.0` |
 
 공개 프로젝트 식별자와 URL은 비밀값이 아닙니다. publishable key는 Vercel 환경 변수로만 주입하고, service-role·secret·coordinator 자격 증명은 저장소와 브라우저 코드에 두지 않습니다.
+브라우저는 DB1 권한 API를 직접 교차 출처 호출하지 않으며, Learn의 동일 출처 프록시는 bearer token 외 쿠키·임의 본문·다른 앱 ID를 전달하지 않습니다.
 
 ## 공유 Edge Function 경계
 

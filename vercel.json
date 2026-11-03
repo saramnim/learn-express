@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "rewrites": [
-    { "source": "/((?!assets/|icon.svg|manifest.webmanifest|sw.js).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|icon.svg|manifest.webmanifest|sw.js).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

@@ -3,7 +3,7 @@
   "canonicalSource": {
     "repository": "https://github.com/saramnim/learn-express",
     "branch": "main",
-    "web": ["src", "public", "vercel.json"],
+    "web": ["src", "public", "api", "server", "vercel.json"],
     "database": ["supabase/migrations", "supabase/rollbacks", "supabase/tests"],
     "edgeFunction": "supabase/functions/service-data/index.ts"
   },
@@ -13,6 +13,7 @@
     "serviceProjectRef": "ftvkahkubsmzplczpvxv",
     "serviceFunction": "service-data",
     "serviceBaseUrl": "https://ftvkahkubsmzplczpvxv.supabase.co/functions/v1/service-data/v1",
+    "authProxy": "/api/auth/* -> https://secret-key-beta.vercel.app/api/auth/*",
     "databaseMigration": "20260928032320_learn_daily_release_admin"
   },
   "sharedRuntimeRule": {
