@@ -1,4 +1,4 @@
-import { proxyCommonAuth } from '../../server/auth-proxy'
+import { proxyCommonAuth } from '../../server/auth-proxy.js'
 
 export default {
   fetch(request: Request) {
